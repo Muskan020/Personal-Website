@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Personal Space</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════
+       THEME TOKENS
+    ═══════════════════════════════════ */
+    :root {
+      --tt: background 0.5s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+      --max: 1100px;
+    }
+
+    /* ── LIGHT MODE — Clyde: soft lavender-white + electric indigo ── */
+    [data-theme="light"] {
+      --bg:         #f5f4ff;
+      --bg2:        #ede9ff;
+      --surface:    #ffffff;
+      --surface2:   #f0edff;
+      --primary:    #5b4fe8;
+      --primary-dim:#7c6ff0;
+      --accent:     #7c6ff0;
+      --accent-dim: #c4beff;
+      --teal:       #818cf8;
+      --teal-dim:   #c7d2fe;
+      --text:       #0f0b2e;
+      --text-mid:   #3b3589;
+      --text-dim:   #8b84c4;
+      --border:     #d0c9f7;
+      --card-bg:    #ffffff;
+      --card-hover: #f0edff;
+      --nav-bg:     rgba(245,244,255,0.92);
+      --modal-bg:   rgba(15,11,46,0.62);
+      --shadow:     0 4px 24px rgba(91,79,232,0.1);
+      --shadow-lg:  0 8px 40px rgba(91,79,232,0.18);
+    }
+
+    /* ── DARK MODE — Clyde: deep navy-indigo + electric violet ── */
+    [data-theme="dark"] {
+      --bg:         #07061a;
+      --bg2:        #0d0b28;
+      --surface:    #110e30;
+      --surface2:   #1a1640;
+      --primary:    #7c6ff0;
+      --primary-dim:#5b4fe8;
+      --accent:     #a89cff;
+      --accent-dim: #2d2560;
+      --teal:       #818cf8;
+      --teal-dim:   #312e81;
+      --text:       #f0eeff;
+      --text-mid:   #b8b0f8;
+      --text-dim:   #4d4680;
+      --border:     #1f1a4a;
+      --card-bg:    #110e30;
+      --card-hover: #1a1640;
+      --nav-bg:     rgba(7,6,26,0.96);
+      --modal-bg:   rgba(7,6,26,0.96);
+      --shadow:     0 4px 24px rgba(0,0,0,0.5);
+      --shadow-lg:  0 8px 40px rgba(0,0,0,0.7);
+    }
+
+    /* ═══════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+      transition: var(--tt);
+    }
+
+    /* ═══════════════════════════════════
+       CURSOR
+    ═══════════════════════════════════ */
+    .cursor {
+      position: fixed; width: 9px; height: 9px;
+      background: var(--primary); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transition: background 0.3s;
+    }
+    .cursor-ring {
+      position: fixed; width: 34px; height: 34px;
+      border: 1.5px solid var(--accent-dim); border-radius: 50%;
+      pointer-events: none; z-index: 9998; opacity: 0.7;
+      transition: border-color 0.3s;
+    }
+
+    /* ═══════════════════════════════════
+       NAV
+    ═══════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 1.1rem 2rem;
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--tt);
+    }
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.15rem;
+      font-style: italic; color: var(--primary); text-decoration: none;
+    }
+    .nav-right { display: flex; align-items: center; gap: 2.2rem; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.67rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--text-mid); text-decoration: none; transition: color 0.25s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1.5px; background: var(--accent);
+      transition: width 0.3s; border-radius: 2px;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* theme toggle pill */
+    .theme-toggle {
+      display: flex; align-items: center;
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: 100px; padding: 0.26rem 0.3rem; cursor: none;
+      transition: var(--tt);
+    }
+    .toggle-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.88rem; transition: background 0.3s, transform 0.3s; color: var(--text-dim);
+    }
+    .toggle-icon.active { background: var(--primary); color: #fff; transform: scale(1.05); }
+
+    /* ═══════════════════════════════════
+       HERO — REAL PHOTO BACKGROUND
+    ═══════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── AURORA MESH BACKGROUND ── */
+    .aurora-wrap {
+      position: absolute; inset: 0; z-index: 0;
+      overflow: hidden;
+      transition: background 0.8s ease;
+    }
+    /* Light base */
+    [data-theme="light"] .aurora-wrap { background: #f5f4ff; }
+    /* Dark base */
+    [data-theme="dark"]  .aurora-wrap { background: #07061a; }
+
+    /* Each blob is a large blurred radial orb */
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+
+    /* Light blobs — soft violet, indigo, lavender */
+    [data-theme="light"] .blob-1 { opacity: 0.52; }
+    [data-theme="light"] .blob-2 { opacity: 0.42; }
+    [data-theme="light"] .blob-3 { opacity: 0.35; }
+    [data-theme="light"] .blob-4 { opacity: 0.28; }
+    [data-theme="light"] .blob-5 { opacity: 0.22; }
+
+    /* Dark blobs — electric indigo, violet, deep purple */
+    [data-theme="dark"] .blob-1 { opacity: 0.65; }
+    [data-theme="dark"] .blob-2 { opacity: 0.55; }
+    [data-theme="dark"] .blob-3 { opacity: 0.45; }
+    [data-theme="dark"] .blob-4 { opacity: 0.38; }
+    [data-theme="dark"] .blob-5 { opacity: 0.30; }
+
+    /* Blob sizes and base colours */
+    .blob-1 {
+      width: 700px; height: 700px;
+      top: -120px; left: -100px;
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    [data-theme="light"] .blob-1 { background: radial-gradient(circle, #a78bfa, #7c3aed 60%, transparent); }
+    [data-theme="dark"]  .blob-1 { background: radial-gradient(circle, #5b4fe8, #3730a3 60%, transparent); }
+
+    .blob-2 {
+      width: 600px; height: 600px;
+      top: 10%; right: -80px;
+      animation: drift2 22s ease-in-out infinite alternate;
+    }
+    [data-theme="light"] .blob-2 { background: radial-gradient(circle, #c4b5fd, #818cf8 60%, transparent); }
+    [data-theme="dark"]  .blob-2 { background: radial-gradient(circle, #7c6ff0, #4f46e5 60%, transparent); }
+
+    .blob-3 {
+      width: 550px; height: 550px;
+      bottom: 5%; left: 20%;
+      animation: drift3 26s ease-in-out infinite alternate;
+    }
+    [data-theme="light"] .blob-3 { background: radial-gradient(circle, #ddd6fe, #a78bfa 60%, transparent); }
+    [data-theme="dark"]  .blob-3 { background: radial-gradient(circle, #6366f1, #312e81 60%, transparent); }
+
+    .blob-4 {
+      width: 480px; height: 480px;
+      top: 30%; left: 40%;
+      animation: drift4 20s ease-in-out infinite alternate;
+    }
+    [data-theme="light"] .blob-4 { background: radial-gradient(circle, #ede9fe, #c4b5fd 60%, transparent); }
+    [data-theme="dark"]  .blob-4 { background: radial-gradient(circle, #4f46e5, #1e1b4b 60%, transparent); }
+
+    .blob-5 {
+      width: 420px; height: 420px;
+      bottom: -60px; right: 15%;
+      animation: drift5 24s ease-in-out infinite alternate;
+    }
+    [data-theme="light"] .blob-5 { background: radial-gradient(circle, #e0e7ff, #818cf8 60%, transparent); }
+    [data-theme="dark"]  .blob-5 { background: radial-gradient(circle, #7c3aed, #312e81 60%, transparent); }
+
+    /* Drift keyframes — each blob moves independently */
+    @keyframes drift1 {
+      0%   { transform: translate(0px, 0px)   scale(1); }
+      33%  { transform: translate(80px, 60px) scale(1.08); }
+      66%  { transform: translate(40px,-50px) scale(0.95); }
+      100% { transform: translate(-60px,80px) scale(1.05); }
+    }
+    @keyframes drift2 {
+      0%   { transform: translate(0px, 0px)    scale(1); }
+      33%  { transform: translate(-70px,50px)  scale(1.06); }
+      66%  { transform: translate(50px, 80px)  scale(0.97); }
+      100% { transform: translate(80px,-60px)  scale(1.04); }
+    }
+    @keyframes drift3 {
+      0%   { transform: translate(0px, 0px)    scale(1); }
+      25%  { transform: translate(60px,-70px)  scale(1.05); }
+      75%  { transform: translate(-80px,40px)  scale(0.96); }
+      100% { transform: translate(30px, 80px)  scale(1.07); }
+    }
+    @keyframes drift4 {
+      0%   { transform: translate(0px, 0px)    scale(1); }
+      40%  { transform: translate(-50px,-60px) scale(1.1); }
+      80%  { transform: translate(70px, 30px)  scale(0.94); }
+      100% { transform: translate(-30px,70px)  scale(1.03); }
+    }
+    @keyframes drift5 {
+      0%   { transform: translate(0px, 0px)   scale(1); }
+      30%  { transform: translate(60px,-40px) scale(1.07); }
+      70%  { transform: translate(-50px,60px) scale(0.98); }
+      100% { transform: translate(40px,-80px) scale(1.05); }
+    }
+
+    /* Noise texture overlay for the organic mesh feel */
+    .aurora-noise {
+      position: absolute; inset: 0; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* Dark overlay so text is always readable */
+    .hero-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      pointer-events: none;
+      transition: background 0.8s ease;
+    }
+    [data-theme="light"] .hero-overlay {
+      background: linear-gradient(160deg, rgba(245,244,255,0.05) 0%, rgba(91,79,232,0.04) 100%);
+    }
+    [data-theme="dark"] .hero-overlay {
+      background: linear-gradient(160deg, rgba(7,6,26,0.15) 0%, rgba(91,79,232,0.05) 100%);
+    }
+
+    /* Centred hero content */
+    .hero-content {
+      position: relative; z-index: 3;
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 1.5rem;
+      max-width: 780px;
+    }
+    .hero-eyebrow {
+      font-size: 0.64rem; letter-spacing: 0.38em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.4rem;
+      opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: ''; width: 28px; height: 1.5px;
+      background: var(--accent); border-radius: 2px; flex-shrink: 0;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.2rem, 8vw, 7rem);
+      font-weight: 400; line-height: 1.0;
+      color: var(--text);
+      opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+    }
+    .hero-title em    { font-style: italic; color: var(--primary); }
+    .hero-title .acc  { color: var(--accent); }
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.22rem;
+      font-weight: 300; font-style: italic;
+      color: var(--text-mid); margin-top: 1.6rem;
+      max-width: 560px; line-height: 1.78;
+      opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+
+    }
+    .hero-cta {
+      margin-top: 2.4rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
+    }
+    .btn-primary {
+      padding: 0.78rem 2rem; background: var(--primary); color: #fff;
+      font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+      text-transform: uppercase; text-decoration: none; border-radius: 4px;
+      border: none; cursor: none; transition: all 0.3s;
+      box-shadow: 0 4px 18px rgba(6,182,212,0.4);
+    }
+    .btn-primary:hover { background: var(--primary-dim); transform: translateY(-2px); }
+    .btn-outline {
+      padding: 0.78rem 2rem; background: transparent;
+      color: var(--primary); font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none;
+      border-radius: 4px; border: 1.5px solid var(--primary);
+      transition: all 0.3s; cursor: none;
+    }
+    .btn-outline:hover { background: var(--surface2); transform: translateY(-2px); }
+
+    /* Scroll hint bottom centre */
+    .hero-scroll {
+      position: absolute; bottom: 2.4rem; left: 50%; transform: translateX(-50%);
+      z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      font-size: 0.56rem; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text-dim); opacity: 0; animation: fadeUp 1s 1.3s forwards;
+    }
+    .scroll-arrow {
+      width: 20px; height: 20px; border-right: 1.5px solid var(--text-dim);
+      border-bottom: 1.5px solid var(--text-dim);
+      transform: rotate(45deg);
+      animation: bounceDown 1.8s 2s ease-in-out infinite;
+    }
+    @keyframes bounceDown {
+      0%, 100% { transform: rotate(45deg) translateY(0); opacity: 0.5; }
+      50%       { transform: rotate(45deg) translateY(6px); opacity: 1; }
+    }
+
+
+
+    /* ═══════════════════════════════════
+       INNER LAYOUT WRAPPER — CENTRED
+    ═══════════════════════════════════ */
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    /* ═══════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════ */
+    section:not(#hero) {
+      padding: 7rem 2rem;
+      border-top: 1px solid var(--border);
+      transition: var(--tt);
+    }
+
+    /* Section header — centred */
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .section-label {
+      font-size: 0.58rem; letter-spacing: 0.42em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.6rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    }
+    .section-label::before,
+    .section-label::after {
+      content: ''; width: 22px; height: 1.5px;
+      background: var(--accent); border-radius: 2px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400; color: var(--text); line-height: 1.1; margin-bottom: 0.9rem;
+    }
+    .section-desc {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.08rem; font-weight: 300;
+      font-style: italic; color: var(--text-mid); max-width: 520px;
+      margin: 0 auto; line-height: 1.8;
+    }
+
+    /* ═══════════════════════════════════
+       WRITING TABS
+    ═══════════════════════════════════ */
+    #writing { background: var(--bg); }
+
+    .writing-tabs {
+      display: flex; gap: 0.4rem; justify-content: center; margin-bottom: 2.8rem;
+    }
+    .tab-btn {
+      padding: 0.55rem 1.4rem; font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.18em; text-transform: uppercase; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 100px; color: var(--text-dim);
+      cursor: none; transition: all 0.25s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 14px rgba(14,116,144,0.25); }
+    .tab-btn:hover:not(.active) { color: var(--primary); border-color: var(--primary); background: var(--surface2); }
+
+    .tab-content { display: none; }
+    .tab-content.active {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+
+    /* cards */
+    .writing-card {
+      background: var(--card-bg); padding: 1.8rem; border: 1.5px solid var(--border);
+      border-radius: 12px; position: relative; overflow: hidden;
+      transition: all 0.35s; cursor: none; box-shadow: var(--shadow);
+    }
+    .writing-card:hover { background: var(--card-hover); transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--card-accent, var(--accent)); }
+    .card-top-bar {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--card-accent, var(--accent)), transparent);
+      border-radius: 12px 12px 0 0; transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .writing-card:hover .card-top-bar { transform: scaleX(1); }
+    .card-tag {
+      display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.53rem;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--card-accent, var(--accent));
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 100px;
+      padding: 0.25rem 0.7rem; margin-bottom: 1rem;
+    }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.08rem; font-weight: 400; color: var(--text); line-height: 1.35; margin-bottom: 0.7rem; }
+    .card-excerpt { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 300; font-style: italic; color: var(--text-mid); line-height: 1.65; margin-bottom: 1.4rem; }
+    .card-meta { font-size: 0.58rem; letter-spacing: 0.14em; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.9rem; }
+    .card-arrow { color: var(--card-accent, var(--accent)); font-size: 1.1rem; transition: transform 0.3s; }
+    .writing-card:hover .card-arrow { transform: translateX(5px); }
+    .technical     { --card-accent: #5b4fe8; }  /* Clyde indigo */
+    .non-technical { --card-accent: #818cf8; }  /* soft violet-blue */
+    .observational { --card-accent: #a89cff; }  /* lavender */
+    .new-entry-card {
+      background: transparent; border: 1.5px dashed var(--border); border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.75rem; min-height: 180px; color: var(--text-dim); font-size: 0.62rem;
+      letter-spacing: 0.2em; text-transform: uppercase; transition: all 0.3s; cursor: none;
+    }
+    .new-entry-card:hover { border-color: var(--accent); color: var(--primary); background: var(--surface2); }
+    .plus-icon { width: 36px; height: 36px; border: 1.5px solid currentColor; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+
+    /* ═══════════════════════════════════
+       PHOTOS
+    ═══════════════════════════════════ */
+    #photos { background: var(--bg2); }
+
+    .timeline { position: relative; padding-left: 2.5rem; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), var(--teal), transparent); border-radius: 2px; }
+    .timeline-year { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--primary); margin-bottom: 1.8rem; margin-top: 3rem; padding-left: 1rem; position: relative; }
+    .timeline-year::before { content: ''; position: absolute; left: -2.5rem; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--accent); border-radius: 50%; border: 2px solid var(--bg2); box-shadow: 0 0 0 3px var(--accent-dim); }
+    .timeline-year:first-child { margin-top: 0; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 1.1rem; margin-bottom: 1rem; padding-left: 1rem; }
+    .photo-item { position: relative; overflow: hidden; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; aspect-ratio: 4/3; cursor: none; transition: all 0.4s; box-shadow: var(--shadow); }
+    .photo-item:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+    .photo-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; color: var(--text-dim); font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; }
+    .photo-placeholder svg { opacity: 0.35; }
+    .photo-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(3,15,20,0.82) 0%, transparent 55%); opacity: 0; transition: opacity 0.3s; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.2rem; border-radius: 10px; }
+    .photo-item:hover .photo-overlay { opacity: 1; }
+    .photo-caption { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-style: italic; color: #fff; }
+    .photo-date { font-size: 0.53rem; letter-spacing: 0.2em; color: var(--accent-dim); margin-top: 0.2rem; }
+    .photo-type-badge { position: absolute; top: 0.7rem; right: 0.7rem; font-size: 0.52rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.22rem 0.6rem; background: var(--primary); color: #fff; border-radius: 100px; }
+    .upload-photo-area { border: 1.5px dashed var(--border); border-radius: 10px; padding: 2rem; text-align: center; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); cursor: none; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; }
+    .upload-photo-area:hover { border-color: var(--accent); color: var(--primary); background: var(--surface2); }
+
+    /* ═══════════════════════════════════
+       GAMES
+    ═══════════════════════════════════ */
+    #games { background: var(--bg); }
+
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1.2rem; }
+    .game-card { background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 2rem 1.8rem; position: relative; overflow: hidden; cursor: none; transition: all 0.35s; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow); }
+    .game-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+    .game-num-bg { position: absolute; top: -0.5rem; right: 0.8rem; font-family: 'Playfair Display', serif; font-size: 5.5rem; font-weight: 700; color: var(--surface2); line-height: 1; pointer-events: none; user-select: none; transition: color 0.4s; }
+    .game-card:hover .game-num-bg { color: var(--border); }
+    .game-status { font-size: 0.52rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--teal); background: var(--surface2); border: 1px solid var(--teal-dim); border-radius: 100px; padding: 0.22rem 0.7rem; width: fit-content; margin-bottom: 1rem; }
+    .game-status.coming { color: var(--text-dim); border-color: var(--border); }
+    .game-name { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 400; color: var(--text); margin-bottom: 0.5rem; }
+    .game-desc { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-style: italic; color: var(--text-mid); line-height: 1.6; flex: 1; margin-bottom: 1.2rem; }
+    #word-game { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; padding: 1.5rem; }
+    .word-display { font-size: 1.7rem; letter-spacing: 0.35em; color: var(--primary); text-align: center; margin: 1.2rem 0; font-weight: 500; }
+    .word-input { width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem; padding: 0.65rem 1rem; outline: none; transition: border-color 0.3s; cursor: none; }
+    .word-input:focus { border-color: var(--accent); }
+    .word-hint { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--text-dim); text-align: center; margin-top: 0.5rem; }
+    .word-score { font-size: 0.6rem; letter-spacing: 0.18em; color: var(--accent); text-align: right; margin-bottom: 0.4rem; }
+    .word-feedback { text-align: center; min-height: 1.4rem; font-size: 0.65rem; letter-spacing: 0.1em; margin-top: 0.4rem; }
+    .game-inner-header { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.6rem; display: flex; justify-content: space-between; }
+    .memory-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.45rem; max-width: 340px; margin: 0 auto; }
+    .mem-card { aspect-ratio: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: none; transition: all 0.3s; position: relative; }
+    .mem-card:hover { border-color: var(--accent); }
+    .mem-card.flipped, .mem-card.matched { background: var(--surface); border-color: var(--accent-dim); }
+    .mem-card.matched { border-color: var(--teal); opacity: 0.75; }
+    .mem-back { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--text-dim); }
+    .mem-card.flipped .mem-back, .mem-card.matched .mem-back { display: none; }
+    .mem-front { display: none; }
+    .mem-card.flipped .mem-front, .mem-card.matched .mem-front { display: flex; align-items: center; justify-content: center; }
+    .mem-status { color: var(--accent); }
+
+    /* ═══════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════ */
+    footer {
+      padding: 3.5rem 2rem; border-top: 1px solid var(--border);
+      background: var(--bg2); transition: var(--tt);
+    }
+    .footer-inner {
+      max-width: var(--max); margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary); font-style: italic; }
+    .footer-note { font-size: 0.58rem; letter-spacing: 0.2em; color: var(--text-dim); }
+
+    /* ═══════════════════════════════════
+       MODALS
+    ═══════════════════════════════════ */
+    .modal-overlay { position: fixed; inset: 0; background: var(--modal-bg); z-index: 8000; display: none; overflow-y: auto; padding: 5rem 2rem; backdrop-filter: blur(8px); }
+    .modal-overlay.open { display: block; }
+    .modal-box { max-width: 700px; margin: 0 auto; background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px; padding: 3rem; position: relative; animation: fadeUp 0.4s ease forwards; box-shadow: var(--shadow-lg); }
+    .modal-close { position: absolute; top: 1.2rem; right: 1.2rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; color: var(--text-dim); font-size: 1.1rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: none; transition: all 0.2s; }
+    .modal-close:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .modal-tag { font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 400; color: var(--text); line-height: 1.2; margin-bottom: 1.5rem; }
+    .modal-body { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; line-height: 1.9; color: var(--text-mid); }
+    .modal-body p { margin-bottom: 1.2rem; }
+    .modal-body h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--text); font-weight: 400; margin: 1.8rem 0 0.6rem; }
+    .modal-body code { font-family: 'DM Mono', monospace; font-size: 0.82rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 0.15rem 0.4rem; color: var(--primary); }
+    .modal-body pre { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 1.3rem; overflow-x: auto; margin: 1.3rem 0; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text); }
+
+    /* ═══════════════════════════════════
+       ANIMATIONS & UTILS
+    ═══════════════════════════════════ */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .reveal { opacity:0; transform:translateY(22px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.2rem; }
+      .nav-links { gap: 1.4rem; }
+      section:not(#hero) { padding: 5rem 1.2rem; }
+      footer { padding: 2.5rem 1.2rem; }
+      .tab-content.active { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: 1fr; }
+      .game-grid { grid-template-columns: 1fr; }
+      .hero-cta { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- ══ NAV ══ -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">Personal Space</a>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="#writing">Writing</a></li>
+          <li><a href="#photos">Photos</a></li>
+          <li><a href="#games">Games</a></li>
+        </ul>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <div class="toggle-icon active" id="iconLight">☀️</div>
+          <div class="toggle-icon"        id="iconDark">🌙</div>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section id="hero">
+    <!-- Aurora mesh background -->
+    <div class="aurora-wrap">
+      <div class="aurora-blob blob-1"></div>
+      <div class="aurora-blob blob-2"></div>
+      <div class="aurora-blob blob-3"></div>
+      <div class="aurora-blob blob-4"></div>
+      <div class="aurora-blob blob-5"></div>
+      <div class="aurora-noise"></div>
+    </div>
+    <div class="hero-overlay"></div>
+
+    <!-- Centred content -->
+    <div class="hero-content">
+      <p class="hero-eyebrow">A corner of the internet</p>
+      <h1 class="hero-title">Writing.<br><em>Art.</em> <span class="acc">Play.</span></h1>
+      <p class="hero-subtitle">A personal space for documenting thoughts, learning, observations, paintings, photographs, and small experiments.</p>
+      <div class="hero-cta">
+        <a href="#writing" class="btn-primary">Explore Writing</a>
+        <a href="#photos"  class="btn-outline">View Archive</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-arrow"></div>
+      Scroll
+    </div>
+
+  </section>
+
+  <!-- ══ WRITING ══ -->
+  <section id="writing">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-label reveal">01</p>
+        <h2 class="section-title reveal">Writing</h2>
+        <p class="section-desc reveal">Technical documentation, personal reflections on books, anime & film, and open-ended observations about the world.</p>
+      </div>
+
+      <div class="writing-tabs reveal">
+        <button class="tab-btn active" onclick="switchTab('technical',this)">Technical</button>
+        <button class="tab-btn"        onclick="switchTab('non-technical',this)">Non-Technical</button>
+        <button class="tab-btn"        onclick="switchTab('observational',this)">Observational</button>
+      </div>
+
+      <!-- TECHNICAL -->
+      <div class="tab-content active" id="tab-technical">
+        <div class="writing-card technical" onclick="openModal('tech1')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">⚙ Technical</div>
+          <h3 class="card-title">Getting Started with Async/Await in JavaScript</h3>
+          <p class="card-excerpt">Understanding the event loop, Promises, and how async/await simplifies asynchronous code. Practical examples with real API calls.</p>
+          <div class="card-meta"><span>Jan 2025 · 8 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="writing-card technical" onclick="openModal('tech2')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">⚙ Technical</div>
+          <h3 class="card-title">Understanding Docker: Containers from First Principles</h3>
+          <p class="card-excerpt">What is a container? Comparing VMs to containers, building a first Dockerfile, and understanding layers and caching.</p>
+          <div class="card-meta"><span>Feb 2025 · 12 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="new-entry-card" onclick="openAddModal('technical')">
+          <div class="plus-icon">+</div>Add Technical Entry
+        </div>
+      </div>
+
+      <!-- NON-TECHNICAL -->
+      <div class="tab-content" id="tab-non-technical">
+        <div class="writing-card non-technical" onclick="openModal('nt1')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">📖 Books</div>
+          <h3 class="card-title">On Reading 'The Remains of the Day'</h3>
+          <p class="card-excerpt">How Ishiguro uses restraint and indirect prose to reveal an entire life lived in denial. Notes and reflections post-read.</p>
+          <div class="card-meta"><span>Dec 2024 · 6 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="writing-card non-technical" onclick="openModal('nt2')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">✦ Anime</div>
+          <h3 class="card-title">Why Mushishi Feels Like Meditation</h3>
+          <p class="card-excerpt">A show about a wanderer who deals with primal supernatural beings. Every episode is a quiet, self-contained world.</p>
+          <div class="card-meta"><span>Nov 2024 · 5 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="writing-card non-technical" onclick="openModal('nt3')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">◎ Personal</div>
+          <h3 class="card-title">Thoughts on Solitude and Deep Work</h3>
+          <p class="card-excerpt">Why I've been deliberately scheduling time away from screens, and what I've noticed about the quality of ideas that emerge in silence.</p>
+          <div class="card-meta"><span>Oct 2024 · 4 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="new-entry-card" onclick="openAddModal('non-technical')">
+          <div class="plus-icon">+</div>Add Non-Technical Entry
+        </div>
+      </div>
+
+      <!-- OBSERVATIONAL -->
+      <div class="tab-content" id="tab-observational">
+        <div class="writing-card observational" onclick="openModal('obs1')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">◉ Observation</div>
+          <h3 class="card-title">Why Do We Default to 'Fine' When Asked How We Are?</h3>
+          <p class="card-excerpt">A small social script we all run. What mental model underlies it? Is it politeness, protection, or information asymmetry?</p>
+          <div class="card-meta"><span>Mar 2025 · 3 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="writing-card observational" onclick="openModal('obs2')">
+          <div class="card-top-bar"></div>
+          <div class="card-tag">⬡ Experiment</div>
+          <h3 class="card-title">30 Days Without Checking the Time</h3>
+          <p class="card-excerpt">What happens to your sense of urgency when you stop clock-watching? Personal notes from a loose experiment over one month.</p>
+          <div class="card-meta"><span>Feb 2025 · 7 min read</span><span class="card-arrow">→</span></div>
+        </div>
+        <div class="new-entry-card" onclick="openAddModal('observational')">
+          <div class="plus-icon">+</div>Add Observation
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PHOTOS ══ -->
+  <section id="photos">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-label reveal">02</p>
+        <h2 class="section-title reveal">Visual Archive</h2>
+        <p class="section-desc reveal">A descriptive timeline of paintings and photographs — a digital documentation of things made and moments seen.</p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-year reveal">2025</div>
+        <div class="photo-grid reveal">
+          <div class="photo-item" onclick="openPhotoModal('Misty Riverbank','Watercolour on 300gsm cold press. Painted after a walk along the river at dawn — the fog was sitting low and the light was incredibly diffused.','March 2025')">
+            <div class="photo-placeholder"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>Upload painting</span></div>
+            <div class="photo-type-badge">Painting</div>
+            <div class="photo-overlay"><div class="photo-caption">Misty Riverbank</div><div class="photo-date">March 2025 · Watercolour</div></div>
+          </div>
+          <div class="photo-item" onclick="openPhotoModal('Street, 6AM','Taken on a walk before the city woke up. The blue hour light was too good to ignore.','Feb 2025')">
+            <div class="photo-placeholder"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>Upload photo</span></div>
+            <div class="photo-type-badge">Photo</div>
+            <div class="photo-overlay"><div class="photo-caption">Street, 6AM</div><div class="photo-date">Feb 2025 · 35mm Film</div></div>
+          </div>
+          <div class="photo-item" onclick="openPhotoModal('Study in Ochre','Palette knife experiment with acrylic. Learning how texture changes the reading of colour.','Jan 2025')">
+            <div class="photo-placeholder"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>Upload painting</span></div>
+            <div class="photo-type-badge">Painting</div>
+            <div class="photo-overlay"><div class="photo-caption">Study in Ochre</div><div class="photo-date">Jan 2025 · Acrylic</div></div>
+          </div>
+        </div>
+
+        <div class="timeline-year reveal">2024</div>
+        <div class="photo-grid reveal">
+          <div class="photo-item" onclick="openPhotoModal('Old Window, Monsoon','Shot during the first monsoon rains. The condensation on the glass caught everything.','Jul 2024')">
+            <div class="photo-placeholder"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>Upload photo</span></div>
+            <div class="photo-type-badge">Photo</div>
+            <div class="photo-overlay"><div class="photo-caption">Old Window, Monsoon</div><div class="photo-date">Jul 2024 · Digital</div></div>
+          </div>
+          <div class="photo-item" onclick="openPhotoModal('Sketch of Solitude','Ink and wash. Quick study, about 40 minutes. Trying to capture stillness.','Apr 2024')">
+            <div class="photo-placeholder"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><span>Upload painting</span></div>
+            <div class="photo-type-badge">Painting</div>
+            <div class="photo-overlay"><div class="photo-caption">Sketch of Solitude</div><div class="photo-date">Apr 2024 · Ink & Wash</div></div>
+          </div>
+          <div class="upload-photo-area" onclick="openAddPhotoModal()" style="aspect-ratio:4/3;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Add to Archive
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ GAMES ══ -->
+  <section id="games">
+    <div class="section-inner">
+      <div class="section-header">
+        <p class="section-label reveal">03</p>
+        <h2 class="section-title reveal">Playground</h2>
+        <p class="section-desc reveal">Small interactive experiments and games built or collected. A place to think by playing.</p>
+      </div>
+
+      <div class="game-grid">
+        <div class="game-card reveal">
+          <div class="game-num-bg">01</div>
+          <div>
+            <div class="game-status">● Live</div>
+            <div class="game-name">Word Unscramble</div>
+            <div class="game-desc">A curated vocabulary from books, science, and philosophy — scrambled. Unscramble the word before the next one appears.</div>
+          </div>
+          <div id="word-game">
+            <div class="game-inner-header"><span>Unscramble</span><span class="word-score" id="wordScore">Score: 0</span></div>
+            <div class="word-display" id="wordDisplay">——————</div>
+            <input class="word-input" id="wordInput" type="text" placeholder="Type your answer..." autocomplete="off" oninput="checkWord()"/>
+            <div class="word-hint" id="wordHint">Hint: loading...</div>
+            <div class="word-feedback" id="wordFeedback"></div>
+          </div>
+        </div>
+
+        <div class="game-card reveal">
+          <div class="game-num-bg">02</div>
+          <div>
+            <div class="game-status">● Live</div>
+            <div class="game-name">Symbol Memory</div>
+            <div class="game-desc">Find all matching pairs. Flip two cards at a time. A small exercise in concentration and pattern memory.</div>
+          </div>
+          <div>
+            <div class="game-inner-header"><span>Match pairs</span><span class="mem-status" id="memStatus">0 / 8 pairs</span></div>
+            <div class="memory-grid" id="memoryGrid"></div>
+          </div>
+        </div>
+
+        <div class="game-card reveal" style="justify-content:center;align-items:center;text-align:center;gap:1rem;">
+          <div class="game-num-bg">03</div>
+          <div class="game-status coming">○ Coming Soon</div>
+          <div class="game-name" style="font-size:1.1rem;">Something New</div>
+          <div class="game-desc" style="font-size:0.88rem;text-align:center;">The next game is being thought up. Ideas welcome.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Personal Space</div>
+      <div class="footer-note">Made with intention · Delhi · 2025</div>
+    </div>
+  </footer>
+
+  <!-- ══ MODALS ══ -->
+  <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">×</button>
+      <div class="modal-tag" id="modalTag"></div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="addModal" onclick="closeModalOnOverlay(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeAddModal()">×</button>
+      <div class="modal-tag" id="addModalTag"></div>
+      <h2 class="modal-title">New Entry</h2>
+      <div class="modal-body">
+        <p style="font-family:'DM Mono';font-size:0.75rem;color:var(--text-mid);line-height:1.85;">
+          This is your personal space. Add new entries here — connect to a CMS, Notion, or markdown files to make it fully dynamic.<br/><br/>
+          <strong style="color:var(--primary);">Suggested workflow:</strong><br/>
+          Write in markdown → push to GitHub → auto-deploy via Netlify or Vercel. Each <code>.md</code> file becomes a card.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ══ CURSOR ══
+    const cursor=document.getElementById('cursor'), ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{
+      mx=e.clientX; my=e.clientY;
+      cursor.style.left=mx-4.5+'px'; cursor.style.top=my-4.5+'px';
+    });
+    (function loop(){
+      rx+=(mx-rx)*0.13; ry+=(my-ry)*0.13;
+      ring.style.left=rx-17+'px'; ring.style.top=ry-17+'px';
+      requestAnimationFrame(loop);
+    })();
+
+    // ══ THEME TOGGLE ══
+    function toggleTheme(){
+      const html=document.documentElement;
+      const isDark=html.getAttribute('data-theme')==='dark';
+      const next=isDark?'light':'dark';
+      html.setAttribute('data-theme',next);
+      document.getElementById('iconLight').classList.toggle('active',!isDark);
+      document.getElementById('iconDark').classList.toggle('active',isDark);
+      localStorage.setItem('theme',next);
+    }
+    (function(){
+      const saved=localStorage.getItem('theme');
+      if(saved==='dark'){
+        document.documentElement.setAttribute('data-theme','dark');
+        document.getElementById('iconLight').classList.remove('active');
+        document.getElementById('iconDark').classList.add('active');
+      }
+    })();
+
+    // ══ TABS ══
+    function switchTab(id,btn){
+      document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('tab-'+id).classList.add('active'); btn.classList.add('active');
+    }
+
+    // ══ SCROLL REVEAL ══
+    const ro=new IntersectionObserver(entries=>{
+      entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);});
+    },{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(r=>ro.observe(r));
+
+    // ══ ARTICLE DATA ══
+    const articleData={
+      tech1:{tag:'Technical · JavaScript',title:'Getting Started with Async/Await in JavaScript',body:`<p>JavaScript is single-threaded. Understanding how it handles asynchronous operations is one of the most fundamental things to get right early.</p><h3>The Problem with Callbacks</h3><p>Before Promises, everything was done with callbacks. This led to deeply nested code — often called "callback hell" — which was hard to read and harder to debug.</p><h3>Promises</h3><p>A Promise is an object representing the eventual completion or failure of an async operation. You chain <code>.then()</code> and <code>.catch()</code> handlers to it.</p><pre>fetch('/api/data')\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));</pre><h3>Async/Await</h3><p>Async/await is syntactic sugar over Promises. It makes async code look and behave more like synchronous code.</p><pre>async function getData() {\n  try {\n    const res = await fetch('/api/data');\n    const data = await res.json();\n    console.log(data);\n  } catch (err) { console.error(err); }\n}</pre><p>The key insight: <code>await</code> pauses execution until the Promise settles — but does not block the main thread.</p>`},
+      tech2:{tag:'Technical · DevOps',title:'Understanding Docker: Containers from First Principles',body:`<p>Before Docker, "it works on my machine" was a genuine engineering problem. Docker packages your application and its dependencies into a container that runs identically anywhere.</p><h3>VMs vs Containers</h3><p>A virtual machine emulates an entire computer. A container shares the host OS kernel but isolates the process and filesystem. Lightweight, starts in milliseconds.</p><h3>A First Dockerfile</h3><pre>FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nCMD ["node", "index.js"]</pre><p>Each line is a layer. Docker caches layers — if only source code changes, it won't re-run <code>npm install</code>.</p><h3>Key Commands</h3><pre>docker build -t my-app .\ndocker run -p 3000:3000 my-app\ndocker ps\ndocker stop &lt;id&gt;</pre>`},
+      nt1:{tag:'Books',title:'On Reading "The Remains of the Day"',body:`<p>Kazuo Ishiguro's novel is narrated by Stevens, a butler who has spent his life in service — and who is, slowly, devastatingly, realising the cost of his choices.</p><p>What's remarkable is what Stevens never says. He describes emotionally charged moments and immediately retreats into professional language. The gap is where the entire tragedy lives.</p><h3>Restraint as a Technique</h3><p>Ishiguro never tells you Stevens is sad. He shows you Stevens organising his memories like filing cabinets, and the very act reveals the disorder underneath.</p><h3>Personal Note</h3><p>The question the book quietly poses: if you spend your whole life being reliable and professional, what did you give up? And is it too late to ask?</p>`},
+      nt2:{tag:'Anime',title:'Why Mushishi Feels Like Meditation',body:`<p>Mushishi follows Ginko, a wandering "mushi-shi" who deals with mushi — primitive life forms at the boundary between existence and non-existence. Most episodes are standalone.</p><p>The show has no villain, no conventional rising action. What it has is atmosphere and a remarkable gentleness toward every person Ginko encounters.</p><h3>The Episodic Format</h3><p>Because each episode is complete in itself, there's no anxiety of "what happens next." I started watching one episode before bed as a wind-down ritual.</p><h3>Observation</h3><p>Ginko is curious but never judgemental — careful attention without agenda. That approach is worth thinking about beyond the screen.</p>`},
+      nt3:{tag:'Personal Thoughts',title:'Thoughts on Solitude and Deep Work',body:`<p>There is a specific quality of thinking that seems only available when there's nothing competing for attention. Not just no phone — no podcast, no background music, nothing.</p><p>I started noticing this when I went on walks without earphones. The first ten minutes are uncomfortable. But somewhere after that, a different kind of thinking starts — associative, slower, less directed.</p><h3>What Changes</h3><p>Ideas that emerge in those walks tend to connect things I hadn't consciously held together. Directed thinking follows known paths. Undirected thinking wanders.</p><p>Cal Newport writes about deep work. But I think there's a precursor: unstructured thinking time that fills the reservoir deep work draws from.</p>`},
+      obs1:{tag:'Observational',title:'Why Do We Default to "Fine" When Asked How We Are?',body:`<p>The exchange happens dozens of times a day. "How are you?" "Fine, thanks." Almost nobody means it. What's happening?</p><h3>The Social Contract Hypothesis</h3><p>One model: this is a greeting ritual, not an information exchange. "Fine" is a token, like "hello." Answering honestly would violate the implicit frame.</p><h3>The Protection Model</h3><p>Another reading: the true answer requires vulnerability, and vulnerability requires trust that hasn't been established in most contexts. "Fine" is a holding position.</p><h3>Open Question</h3><p>The social script is self-reinforcing — nobody breaks it because nobody expects it to be broken. But scripts can change.</p>`},
+      obs2:{tag:'Experiment',title:'30 Days Without Checking the Time',body:`<p>The idea: stop checking the clock unless functionally necessary. No time widget on screen. Watch covered.</p><h3>Week One</h3><p>Uncomfortable. A background anxiety I hadn't noticed became visible precisely because I was denying it its habitual release. I kept reaching for the phone.</p><h3>Week Two–Three</h3><p>A recalibration. I started estimating time by light, hunger, and energy. I started finishing tasks when they were done rather than when allotted time ran out.</p><h3>What I Noticed</h3><p>The urgency that time-checking creates is partly self-generated. Without it, the day had a different texture — longer, or at least less divided.</p><p>Open question: is our sense of being "busy" partly a function of how frequently we check time?</p>`}
+    };
+
+    // ══ MODALS ══
+    function openModal(id){const d=articleData[id];if(!d)return;document.getElementById('modalTag').textContent=d.tag;document.getElementById('modalTitle').textContent=d.title;document.getElementById('modalBody').innerHTML=d.body;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';}
+    function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+    function openAddModal(t){document.getElementById('addModalTag').textContent=t.charAt(0).toUpperCase()+t.slice(1);document.getElementById('addModal').classList.add('open');document.body.style.overflow='hidden';}
+    function closeAddModal(){document.getElementById('addModal').classList.remove('open');document.body.style.overflow='';}
+    function closeModalOnOverlay(e){if(e.target===e.currentTarget){closeModal();closeAddModal();}}
+    function openPhotoModal(title,desc,date){document.getElementById('modalTag').textContent=date;document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=`<p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;line-height:1.85;">${desc}</p><p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.18em;color:var(--text-dim);margin-top:2rem;border-top:1px solid var(--border);padding-top:1rem;">To display the actual image, upload it and reference the file path here.</p>`;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';}
+    function openAddPhotoModal(){openAddModal('Photo / Painting');}
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddModal();}});
+
+    // ══ WORD SCRAMBLE ══
+    const wordList=[{word:'serendipity',hint:'Finding something good by chance'},{word:'ephemeral',hint:'Lasting a very short time'},{word:'liminal',hint:'Relating to a threshold or in-between state'},{word:'solitude',hint:'State of being alone'},{word:'recursive',hint:'Defined in terms of itself (often in computing)'},{word:'empirical',hint:'Based on observation and experiment'},{word:'resonance',hint:'Reinforcement or prolongation of sound or meaning'},{word:'threshold',hint:'The point just before something begins'},{word:'inference',hint:'Conclusion reached from evidence'},{word:'nostalgia',hint:'Sentimental longing for the past'}];
+    let currentWord='',wordScore=0;
+    function scramble(w){const a=w.split('');for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}const s=a.join('');return s===w?scramble(w):s;}
+    function loadNewWord(){const w=wordList[Math.floor(Math.random()*wordList.length)];currentWord=w.word;document.getElementById('wordDisplay').textContent=scramble(w.word).toUpperCase();document.getElementById('wordHint').textContent='Hint: '+w.hint;document.getElementById('wordInput').value='';document.getElementById('wordFeedback').textContent='';document.getElementById('wordFeedback').style.color='';}
+    function checkWord(){const v=document.getElementById('wordInput').value.trim().toLowerCase();if(v===currentWord){wordScore++;document.getElementById('wordScore').textContent='Score: '+wordScore;document.getElementById('wordFeedback').textContent='✓ Correct!';document.getElementById('wordFeedback').style.color='var(--teal)';setTimeout(loadNewWord,800);}}
+    loadNewWord();
+
+    // ══ MEMORY GAME ══
+    const symbols=['◈','◉','◊','◍','◎','●','◐','◑'];
+    let memCards=[...symbols,...symbols].sort(()=>Math.random()-0.5),flipped=[],matched=0,lockBoard=false;
+    function buildMemoryGrid(){const g=document.getElementById('memoryGrid');g.innerHTML='';memCards.forEach((sym,i)=>{const c=document.createElement('div');c.className='mem-card';c.innerHTML=`<div class="mem-back">?</div><div class="mem-front">${sym}</div>`;c.dataset.symbol=sym;c.dataset.index=i;c.addEventListener('click',flipCard);g.appendChild(c);});}
+    function flipCard(){if(lockBoard||this.classList.contains('flipped')||this.classList.contains('matched'))return;this.classList.add('flipped');flipped.push(this);if(flipped.length===2){lockBoard=true;const[a,b]=flipped;if(a.dataset.symbol===b.dataset.symbol){a.classList.add('matched');b.classList.add('matched');matched++;document.getElementById('memStatus').textContent=matched+' / 8 pairs';if(matched===8)setTimeout(()=>alert('All matched! 🎉'),300);flipped=[];lockBoard=false;}else{setTimeout(()=>{a.classList.remove('flipped');b.classList.remove('flipped');flipped=[];lockBoard=false;},900);}}}
+    buildMemoryGrid();
+  </script>
+</body>
+</html>
